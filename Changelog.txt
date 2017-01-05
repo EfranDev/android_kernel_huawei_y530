@@ -9,3 +9,4 @@
 7. Dynamic readahead support.
 8. Add Sound Control 3.4.
 9. Added governors (-Ondemandplus -lionheart -wheatley -intelliactive -intellidemand).
+10. Enabled ARCH_POWER.
