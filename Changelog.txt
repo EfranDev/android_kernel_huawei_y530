@@ -4,3 +4,4 @@
 2. Reduced swappiness from 60 to 40
 3. Optimized SLUB
 4. Asynchronous I/O latency to a solid-state disk greatly increased
+5. NOATIME and NODIRATIME by default
