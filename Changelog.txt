@@ -1,3 +1,4 @@
 # Changelog Galantis Kernel
 
 1. Disabled GENTLE_FAIR_SLEEPERS
+2. Reduced swappiness from 60 to 40
