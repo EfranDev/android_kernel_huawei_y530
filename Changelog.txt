@@ -1,1 +1,3 @@
 # Changelog Galantis Kernel
+
+1. Disabled GENTLE_FAIR_SLEEPERS
