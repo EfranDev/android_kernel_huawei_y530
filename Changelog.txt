@@ -7,3 +7,5 @@
 5. NOATIME and NODIRATIME by default
 6. Enabled aggressive multi-core power savings
 7. Dynamic readahead support
+8. Add Sound Control 3.4
+
