@@ -2812,6 +2812,7 @@ static void msm8x10_wcd_micb_internal(struct snd_soc_codec *codec, bool on)
 	snd_soc_update_bits(codec, MSM8X10_WCD_A_MICB_1_INT_RBIAS,
 			    0x1C, on ? 0x14 : 0x00);
 }
+#endif
 
 static void msm8x10_wcd_enable_mb_vddio(struct snd_soc_codec *codec, bool on)
 {
@@ -3217,6 +3218,13 @@ done:
 	return rc;
 }
 
+#ifdef CONFIG_SOUND_CONTROL_HAX_3_GPL
+struct snd_kcontrol_new *gpl_faux_snd_controls_ptr =
+ 	(struct snd_kcontrol_new *)msm8x10_wcd_snd_controls;
+struct snd_soc_codec *fauxsound_codec_ptr;
+EXPORT_SYMBOL(fauxsound_codec_ptr);
+#endif
+
 static int msm8x10_wcd_codec_probe(struct snd_soc_codec *codec)
 {
 	struct msm8x10_wcd_priv *msm8x10_wcd_priv;
@@ -3324,6 +3332,7 @@ exit_probe:
 	return ret;
 
 }
+#endif
 
 static int msm8x10_wcd_codec_remove(struct snd_soc_codec *codec)
 {
