@@ -13,3 +13,4 @@
 -------------------------------      GALANTIS -R1      -------------------------------
 11. Enable Ondemandplus from Galantis r1 (initial for GALANTIS -R2).
 12. Proper gcc 4.8 fix.
+13. Implement intelliplug 3.8.

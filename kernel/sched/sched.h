@@ -13,7 +13,7 @@ extern __read_mostly int scheduler_running;
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
  * and back.
  */
-#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO + (nice) + 20)
+#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO (nice) 20)
 #define PRIO_TO_NICE(prio)	((prio) - MAX_RT_PRIO - 20)
 #define TASK_NICE(p)		PRIO_TO_NICE((p)->static_prio)
 
@@ -448,7 +448,7 @@ struct rq {
 	/* latency stats */
 	struct sched_info rq_sched_info;
 	unsigned long long rq_cpu_time;
-	/* could above be rq->cfs_rq.exec_clock + rq->rt_rq.rt_runtime ? */
+	/* could above be rq->cfs_rq.exec_clock rq->rt_rq.rt_runtime ? */
 
 	/* sys_sched_yield() stats */
 	unsigned int yld_count;
@@ -483,6 +483,24 @@ DECLARE_PER_CPU(struct rq, runqueues);
 #define task_rq(p)		cpu_rq(task_cpu(p))
 #define cpu_curr(cpu)		(cpu_rq(cpu)->curr)
 #define raw_rq()		(&__raw_get_cpu_var(runqueues))
+
+#ifdef CONFIG_INTELLI_PLUG
+struct nr_stats_s {
+	/* time-based average load */
+	u64 nr_last_stamp;
+	unsigned int ave_nr_running;
+	seqcount_t ave_seqcnt;
+};
+
+#define NR_AVE_PERIOD_EXP	28
+#define NR_AVE_SCALE(x) ((x) << FSHIFT)
+#define NR_AVE_PERIOD	(1 << NR_AVE_PERIOD_EXP)
+#define NR_AVE_DIV_PERIOD(x) ((x) >> NR_AVE_PERIOD_EXP)
+
+DECLARE_PER_CPU(struct nr_stats_s, runqueue_stats);
+
+#endif
+
 
 #ifdef CONFIG_SMP
 
@@ -771,7 +789,7 @@ static inline void finish_lock_switch(struct rq *rq, struct task_struct *prev)
 
 static inline void update_load_add(struct load_weight *lw, unsigned long inc)
 {
-	lw->weight += inc;
+	lw->weight= inc;
 	lw->inv_weight = 0;
 }
 
@@ -807,7 +825,7 @@ static inline void update_load_set(struct load_weight *lw, unsigned long w)
  *
  * The "10% effect" is relative and cumulative: from _any_ nice level,
  * if you go up 1 level, it's -10% CPU usage, if you go down 1 level
- * it's +10% CPU usage. (to achieve that we use a multiplier of 1.25.
+ * it's10% CPU usage. (to achieve that we use a multiplier of 1.25.
  * If a task goes up by ~10% and another task goes down by ~10% then
  * the relative distance between them is ~25%.)
  */
@@ -924,16 +942,55 @@ extern void cpuacct_charge(struct task_struct *tsk, u64 cputime);
 static inline void cpuacct_charge(struct task_struct *tsk, u64 cputime) {}
 #endif
 
+#ifdef CONFIG_INTELLI_PLUG
+static inline unsigned int do_avg_nr_running(struct rq *rq)
+{
+	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
+	unsigned int ave_nr_running = nr_stats->ave_nr_running;
+	s64 nr, deltax;
+	deltax = rq->clock_task - nr_stats->nr_last_stamp;
+	nr = NR_AVE_SCALE(rq->nr_running);
+	if (deltax > NR_AVE_PERIOD)
+		ave_nr_running = nr;
+	else
+		ave_nr_running=
+		NR_AVE_DIV_PERIOD(deltax * (nr - ave_nr_running));
+	return ave_nr_running;
+}
+#endif
+
 static inline void inc_nr_running(struct rq *rq)
 {
+#ifdef CONFIG_INTELLI_PLUG
+	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
+#endif
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, true);
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_begin(&nr_stats->ave_seqcnt);
+	nr_stats->ave_nr_running = do_avg_nr_running(rq);
+	nr_stats->nr_last_stamp = rq->clock_task;
+#endif
 	rq->nr_running++;
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_end(&nr_stats->ave_seqcnt);
+#endif
 }
 
 static inline void dec_nr_running(struct rq *rq)
 {
+#ifdef CONFIG_INTELLI_PLUG
+	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
+#endif
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, false);
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_begin(&nr_stats->ave_seqcnt);
+	nr_stats->ave_nr_running = do_avg_nr_running(rq);
+	nr_stats->nr_last_stamp = rq->clock_task;
+#endif
 	rq->nr_running--;
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_end(&nr_stats->ave_seqcnt);
+#endif
 }
 
 extern void update_rq_clock(struct rq *rq);
@@ -985,7 +1042,7 @@ static inline int hrtick_enabled(struct rq *rq)
 extern void sched_avg_update(struct rq *rq);
 static inline void sched_rt_avg_update(struct rq *rq, u64 rt_delta)
 {
-	rq->rt_avg += rt_delta;
+	rq->rt_avg= rt_delta;
 	sched_avg_update(rq);
 }
 #else
