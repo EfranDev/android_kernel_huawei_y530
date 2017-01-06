@@ -13,7 +13,7 @@ extern __read_mostly int scheduler_running;
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
  * and back.
  */
-#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO (nice) 20)
+#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO + (nice) + 20)
 #define PRIO_TO_NICE(prio)	((prio) - MAX_RT_PRIO - 20)
 #define TASK_NICE(p)		PRIO_TO_NICE((p)->static_prio)
 
@@ -448,7 +448,7 @@ struct rq {
 	/* latency stats */
 	struct sched_info rq_sched_info;
 	unsigned long long rq_cpu_time;
-	/* could above be rq->cfs_rq.exec_clock rq->rt_rq.rt_runtime ? */
+	/* could above be rq->cfs_rq.exec_clock + rq->rt_rq.rt_runtime ? */
 
 	/* sys_sched_yield() stats */
 	unsigned int yld_count;
@@ -789,7 +789,7 @@ static inline void finish_lock_switch(struct rq *rq, struct task_struct *prev)
 
 static inline void update_load_add(struct load_weight *lw, unsigned long inc)
 {
-	lw->weight= inc;
+	lw->weight += inc;
 	lw->inv_weight = 0;
 }
 
@@ -825,7 +825,7 @@ static inline void update_load_set(struct load_weight *lw, unsigned long w)
  *
  * The "10% effect" is relative and cumulative: from _any_ nice level,
  * if you go up 1 level, it's -10% CPU usage, if you go down 1 level
- * it's10% CPU usage. (to achieve that we use a multiplier of 1.25.
+ * it's +10% CPU usage. (to achieve that we use a multiplier of 1.25.
  * If a task goes up by ~10% and another task goes down by ~10% then
  * the relative distance between them is ~25%.)
  */
@@ -1042,7 +1042,7 @@ static inline int hrtick_enabled(struct rq *rq)
 extern void sched_avg_update(struct rq *rq);
 static inline void sched_rt_avg_update(struct rq *rq, u64 rt_delta)
 {
-	rq->rt_avg= rt_delta;
+	rq->rt_avg += rt_delta;
 	sched_avg_update(rq);
 }
 #else
