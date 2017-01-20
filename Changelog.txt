@@ -1,5 +1,5 @@
 # Changelog Galantis Kernel
-
+---------------------------------  INITIAL GALANTIS  ---------------------------------
 1.  Disabled GENTLE_FAIR_SLEEPERS.
 2.  Reduced swappiness from 60 to 40.
 3.  Optimized SLUB.
@@ -21,3 +21,5 @@
 18. Added Fast Charge.
 19. Added Frandom Support.
 20. Added Governor (msm-adreno-tz).
+21. It's Galantis -r2 (Several important changes).
+-------------------------------      GALANTIS -R2      -------------------------------
