@@ -17,3 +17,4 @@
 14. block: add sio, zen i/o scheduler.
 15. Added Governor (Nightmare).
 16. block: added TripNdroid & Fifo io schedulers.
+17. cpufreq: added Governor (Badass).
