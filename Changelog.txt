@@ -15,3 +15,4 @@
 12. Proper gcc 4.8 fix.
 13. Implement intelliplug 3.8.
 14. block: add sio, zen i/o scheduler.
+15. Added Governor (Nightmare).
