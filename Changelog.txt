@@ -19,3 +19,4 @@
 16. block: added TripNdroid & Fifo io schedulers.
 17. cpufreq: added Governor (Badass).
 18. Added Fast Charge.
+19. Added Frandom Support.
