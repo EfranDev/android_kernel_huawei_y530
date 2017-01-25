@@ -18,8 +18,7 @@
 15. Added Governor (Nightmare).
 16. block: added TripNdroid & Fifo io schedulers.
 17. cpufreq: added Governor (Badass).
-18. Added Fast Charge.
-19. Added Frandom Support.
-20. Added Governor (msm-adreno-tz).
-21. It's Galantis -r2 (Several important changes).
+18. Added Frandom Support.
+19. Added Governor (msm-adreno-tz).
+20. It's Galantis -r2 (Several important changes).
 -------------------------------      GALANTIS -R2      -------------------------------
